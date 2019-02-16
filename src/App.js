@@ -1,25 +1,24 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Photo from './components/Photo';
 
 class App extends Component {
+
+  capture = (imgSrc) => {
+    console.log(imgSrc);
+
+
+
+  }
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div>
+    <Photo 
+    capture={this.capture}
+    width={1920} 
+    linkToSave="http://yagoubi.000webhostapp.com/getImage"
+    height={1440} />
+
+        
       </div>
     );
   }

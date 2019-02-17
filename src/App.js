@@ -15,7 +15,7 @@ class App extends Component {
     <Photo 
     capture={this.capture}
     width={1920} 
-    linkToSave="http://yagoubi.000webhostapp.com/getImage"
+    linkToSave="http://yagoubi.000webhostapp.com/getImage/index.php"
     height={1440} />
 
         

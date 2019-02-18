@@ -10,9 +10,8 @@ class Photo extends Component {
 
   componentWillUnmount = () =>{
     // delete userMedia
-
-   const video = this.refs.cam;
-   video.pause();
+   // stream.getVideoTracks()[0].stop();
+   document.getElementById('video').pause();
   }
   componentDidMount = () => {
     navigator.mediaDevices
@@ -97,7 +96,7 @@ class Photo extends Component {
   };
 
   showImage = () => {
-    if(!this.state.load){
+   
       const imageContainer = document.getElementById("new-image");
       const replay = document.getElementById("replay");
       const save = document.getElementById("save");
@@ -116,7 +115,7 @@ class Photo extends Component {
       imageContainer.style.height = "100%";
       imageContainer.style.bottom = 0;
       imageContainer.style.left = 0;
-    }
+    
    
   };
 
@@ -174,7 +173,7 @@ class Photo extends Component {
             <Replay />
           </div>
 
-          {this.props.linkToSave ? (
+          
             <div
               id="save"
               className="camera-btn-outer flexbox"
@@ -190,7 +189,7 @@ class Photo extends Component {
             >
               <Save />
             </div>
-          ) : null}
+          
         </div>
         {this.state.load ? (
           <CircularProgress

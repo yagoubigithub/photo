@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import Photo from "./components/Photo";
 import Dialog from "@material-ui/core/Dialog";
-import { IconButton, Button } from "@material-ui/core";
-import { Replay, Close } from "@material-ui/icons";
+import { Button } from "@material-ui/core";
+import {  Close } from "@material-ui/icons";
 
 class App extends Component {
   state = {
@@ -40,7 +40,8 @@ class App extends Component {
           <Photo
             capture={this.capture}
             width={1920}
-            linkToSave="http://yagoubi.000webhostapp.com/getImage/index.php"
+          
+           // linkToSave="http://yagoubi.000webhostapp.com/getImage/index.php"
             height={1440}
           />
         </Dialog>

@@ -16,7 +16,9 @@ class App extends Component {
     capture={this.capture}
     width={1920} 
     linkToSave="http://yagoubi.000webhostapp.com/getImage/index.php"
-    height={1440} />
+    height={1440} 
+
+    />
 
         
       </div>

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { Replay, Save } from "@material-ui/icons";
 import "./style.css";
-
-
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Photo extends Component {
-  state = {};
+  state = {
+    load: false
+  };
 
   componentDidMount = () => {
     navigator.mediaDevices
@@ -56,28 +57,29 @@ class Photo extends Component {
     if (this.props.linkToSave) {
       //send
       document.getElementById("save").addEventListener("click", () => {
-        
-
-        const formData = new FormData();
-        formData.append("src", "Hello world");
-        var http = new XMLHttpRequest();
-        var url = this.props.linkToSave;
-        var params = "src="+canvas.toDataURL("image/png");
-        http.open("POST", url, true);
-
-        //Send the proper header information along with the request
-        http.setRequestHeader(
-          "Content-type",
-          "application/x-www-form-urlencoded"
-        );
-
-        http.onreadystatechange = function() {
-          //Call a function when the state changes.
-          if (http.readyState == 4 && http.status == 200) {
-            alert(http.responseText);
-          }
-        };
-        http.send(params);
+        if(!this.state.load){
+          const http = new XMLHttpRequest();
+          const url = this.props.linkToSave;
+          const params = "src=" + canvas.toDataURL("image/png");
+          http.open("POST", url, true);
+          this.setState({ load: true });
+  
+         
+          //Send the proper header information along with the request
+          http.setRequestHeader(
+            "Content-type",
+            "application/x-www-form-urlencoded"
+          );
+  
+          http.onreadystatechange = () => {
+            //Call a function when the state changes.
+            if (http.readyState == 4 && http.status == 200) {
+              this.setState({ load: false });
+            }
+          };
+          http.send(params);
+        }
+      
       });
     }
     if (this.props.capture) {
@@ -86,24 +88,27 @@ class Photo extends Component {
   };
 
   showImage = () => {
-    const imageContainer = document.getElementById("new-image");
-    const replay = document.getElementById("replay");
-    const save = document.getElementById("save");
-
-    replay.style.display = "flex";
-    save.style.display = "flex";
-
-    replay.style.transition = "opacity 1s";
-    save.style.transition = "opacity 1s";
-
-    replay.style.opacity = 1;
-    save.style.opacity = 1;
-
-    imageContainer.style.transition = "all 1s";
-    imageContainer.style.width = "100%";
-    imageContainer.style.height = "100%";
-    imageContainer.style.bottom = 0;
-    imageContainer.style.left = 0;
+    if(!this.state.load){
+      const imageContainer = document.getElementById("new-image");
+      const replay = document.getElementById("replay");
+      const save = document.getElementById("save");
+  
+      replay.style.display = "flex";
+      save.style.display = "flex";
+  
+      replay.style.transition = "opacity 1s";
+      save.style.transition = "opacity 1s";
+  
+      replay.style.opacity = 1;
+      save.style.opacity = 1;
+  
+      imageContainer.style.transition = "all 1s";
+      imageContainer.style.width = "100%";
+      imageContainer.style.height = "100%";
+      imageContainer.style.bottom = 0;
+      imageContainer.style.left = 0;
+    }
+   
   };
 
   replay = () => {
@@ -159,22 +164,36 @@ class Photo extends Component {
           >
             <Replay />
           </div>
-          <div
-            id="save"
-            className="camera-btn-outer flexbox"
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              bottom: 10,
-              marginLeft: "100%",
-              opacity: 0,
-              right: 10,
-              display: "none"
-            }}
-          >
-            <Save />
-          </div>
+
+          {this.props.linkToSave ? (
+            <div
+              id="save"
+              className="camera-btn-outer flexbox"
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                bottom: 10,
+                marginLeft: "100%",
+                opacity: 0,
+                right: 10,
+                display: "none"
+              }}
+            >
+              <Save />
+            </div>
+          ) : null}
         </div>
+        {this.state.load ? (
+          <CircularProgress
+            size={100}
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              zIndex: 100
+            }}
+          />
+        ) : null}
 
         <canvas
           id="canvas"

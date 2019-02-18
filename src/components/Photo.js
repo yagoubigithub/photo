@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Replay, Save } from "@material-ui/icons";
-import "./style.css";
+import "./Photo.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Photo extends Component {
@@ -8,6 +8,12 @@ class Photo extends Component {
     load: false
   };
 
+  componentWillUnmount = () =>{
+    // delete userMedia
+
+   const video = this.refs.cam;
+   video.pause();
+  }
   componentDidMount = () => {
     navigator.mediaDevices
       .getUserMedia({
@@ -36,6 +42,9 @@ class Photo extends Component {
         camWidth: video.videoWidth,
         camHeight: video.videoHeight
       });
+    });
+    video.addEventListener("pause", () => {
+      stream.getVideoTracks()[0].stop();
     });
   };
 

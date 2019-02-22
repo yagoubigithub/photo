@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Photo from "./components/Photo";
 import Dialog from "@material-ui/core/Dialog";
-import { Button } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
 import {  Close } from "@material-ui/icons";
 
 class App extends Component {
@@ -19,29 +19,27 @@ class App extends Component {
       <div>
         <Button variant="contained" color="primary" onClick={this.OpenCloseDialog}>Prendre une photo</Button>
         <Dialog open={this.state.dialog}>
-          <div
+         
+          <IconButton
+            color="secondary"
             style={{
-              justifyContent: "center",
-              alignItems: "center",
-              display: "flex",
               position: "fixed",
-              left: 5,
-              top: 5,
-              zIndex: 100,
-              borderRadius: "100%",
-              width: 60,
-              height: 60,
-              backgroundColor: "#2acef5"
+              left: 10,
+              top: 10,
+              zIndex : 100
             }}
             onClick={this.OpenCloseDialog}
           >
-            <Close />
-          </div>
+            <Close fontSize="large" />
+          </IconButton>
+
+         
+
           <Photo
             capture={this.capture}
             width={1920}
           
-           // linkToSave="http://yagoubi.000webhostapp.com/getImage/index.php"
+           //linkToSave="http://yagoubi.000webhostapp.com/getImage/index.php"
             height={1440}
           />
         </Dialog>

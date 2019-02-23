@@ -1,13 +1,28 @@
 import React, { Component } from "react";
-import { Replay, Save, Camera } from "@material-ui/icons";
-import "./Photo.css";
+import { Replay, Save, Camera,SwitchCamera } from "@material-ui/icons";
 import soundFile from "./audio/camera-shutter-click-03.mp3";
+import { withStyles } from "@material-ui/core/styles";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 import IconButton from "@material-ui/core/IconButton";
+
+const styles = {
+  camera_btn_outer: {
+    width: "60px",
+    height: "60px",
+    position: "fixed",
+    marginLeft: "50%",
+    borderRadius: "30px !important",
+    bottom: 10,
+    background: "transparent",
+    zIndex: 99
+  }
+};
 class Photo extends Component {
   state = {
-    load: false
+    load: false,
+    videoLoad: false,
+    facingMode: "user"
   };
 
   componentWillUnmount = () => {
@@ -16,26 +31,20 @@ class Photo extends Component {
     document.getElementById("video").pause();
   };
   componentDidMount = () => {
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: false,
-        video: {
-          width: { ideal: this.props.width },
-          height: { ideal: this.props.height },
-          facingMode: this.props.front ? "user" : "environment"
-        }
-      })
-      .then(this.success)
-      .catch(this.error);
-    this.setState({
-      camWidth: null,
-      camHeight: null
-    });
+  this.Media();
   };
 
   success = stream => {
     const video = this.refs.cam;
-    video.srcObject = stream;
+    if (window.URL) {
+      try {
+        video.src = window.URL.createObjectURL(stream);
+      } catch (error) {
+        video.srcObject = stream;
+      }
+    } else {
+      video.src = stream;
+    }
     video.play();
 
     video.addEventListener("playing", () => {
@@ -49,10 +58,62 @@ class Photo extends Component {
     });
   };
 
-  error = err => {
-    console.log(err);
-  };
+  Media = () =>{
+    const video = this.refs.cam;
+    video.addEventListener("loadedmetadata", () => {
+      this.setState({ videoLoad: true });
+    });
 
+    if (navigator.mediaDevices.getUserMedia === undefined) {
+      navigator.getMedia =
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia;
+
+      navigator.getMedia(
+        {
+          video: {
+            width: { ideal: this.props.width },
+            height: { ideal: this.props.height },
+            facingMode: { ideal: this.state.facingMode }
+          },
+          audio: false
+        },
+        this.success,
+        this.error
+      );
+    } else {
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: false,
+          video: {
+            width: { ideal: this.props.width },
+            height: { ideal: this.props.height },
+            facingMode: { ideal: this.state.facingMode }
+          }
+        })
+        .then(this.success)
+        .catch(this.error);
+    }
+
+    this.setState({
+      camWidth: null,
+      camHeight: null
+    });
+  }
+  error = err => {
+    alert(err);
+  };
+  chnageFacingMode = () =>{
+    if(this.state.facingMode === "user")
+    this.setState({facingMode : "environment"});
+    else{
+      this.setState({facingMode : "user"});
+    }
+    this.Media();
+    console.log(this.state.facingMode);
+  }
   capture = () => {
     const canvas = this.refs.canvas;
     const video = this.refs.cam;
@@ -102,8 +163,8 @@ class Photo extends Component {
     const replay = document.getElementById("replay");
     const save = document.getElementById("save");
 
-    replay.style.display = "flex";
-    save.style.display = "flex";
+    replay.style.display = "inline";
+    save.style.display = "inline";
 
     replay.style.transition = "opacity 1s";
     save.style.transition = "opacity 1s";
@@ -141,7 +202,34 @@ class Photo extends Component {
           top: 0
         }}
       >
-        <video id="video" autoPlay playsInline ref="cam" />
+        <video
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            minHeight: "100%",
+            background: "#000"
+          }}
+          id="video"
+          autoPlay
+          playsInline
+          ref="cam"
+        />
+
+        {this.state.videoLoad ? (
+          <IconButton
+            color="secondary"
+            onClick={this.chnageFacingMode}
+            style={{
+              position: "fixed",
+              top: 10,
+              right: 10
+            }}
+          >
+            <SwitchCamera fontSize="large" />
+          </IconButton>
+        ) : null}
         <div
           style={{
             position: "fixed",
@@ -154,10 +242,28 @@ class Photo extends Component {
             width: "100%"
           }}
         >
-          <IconButton color="secondary" onClick={this.capture}>
-            <Camera fontSize="large" />
-          </IconButton>
-          <div id="new-image">
+          {this.state.videoLoad ? (
+            <IconButton color="secondary" onClick={this.capture}>
+              <Camera fontSize="large" />
+            </IconButton>
+          ) : null}
+
+          <div
+            id="new-image"
+            style={{
+              position: "fixed",
+              bottom: 12,
+              left: 20,
+              width: 60,
+              height: 60,
+              border: "1px solid #fff",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              zIndex: 99,
+              display: "none"
+            }}
+          >
             <IconButton
               color="secondary"
               id="replay"
@@ -173,30 +279,30 @@ class Photo extends Component {
             >
               <Replay fontSize="large" />
             </IconButton>
+
+            <IconButton
+              color="secondary"
+              id="save"
+              style={{
+                position: "fixed",
+                bottom: 10,
+                opacity: 0,
+                display: "none",
+                right: 10
+              }}
+            >
+              <Save fontSize="large" />
+            </IconButton>
           </div>
-
-          <IconButton
-            color="secondary"
-            id="save"
-            style={{
-              position: "fixed",
-              bottom: 10,
-
-              opacity: 0,
-              display: "none",
-              right: 10
-            }}
-          >
-            <Save fontSize="large" />
-          </IconButton>
         </div>
+
         {this.state.load ? (
           <CircularProgress
             size={100}
             style={{
               position: "fixed",
               top: "50%",
-              left: "50%",
+              left: "44%",
               zIndex: 100
             }}
           />
@@ -216,4 +322,4 @@ class Photo extends Component {
   }
 }
 
-export default Photo;
+export default withStyles(styles)(Photo);
